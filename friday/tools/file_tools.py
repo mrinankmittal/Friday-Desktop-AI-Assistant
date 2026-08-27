@@ -18,7 +18,7 @@ from friday.files.ops import (
     search_files,
     write_file,
 )
-from friday.files.recent import last_file, remember_file
+from friday.files.recent import last_file, remember_file, remember_folder
 from friday.files.run_source import run_source_file
 from friday.os_adapters import get_os_adapter
 from friday.memory import get_memory_settings
@@ -158,6 +158,27 @@ def _read_tool(allow_paths: tuple[Path, ...], extra_allow: tuple[Path, ...]) -> 
                         },
                         observation="missing_file",
                     )
+            if path.is_dir():
+                if not open_it:
+                    return ToolResult(
+                        ok=False,
+                        data={"reply": f"{path.name} is a folder, not a text file."},
+                        observation="folder_not_readable",
+                    )
+                try:
+                    get_os_adapter().open_path(str(path))
+                except OSError as error:
+                    return ToolResult(
+                        ok=False,
+                        data={"reply": f"I found {path.name}, but I couldn't open it."},
+                        observation="error",
+                        error=str(error),
+                    )
+                return ToolResult(
+                    ok=True,
+                    data={"reply": f"Opening folder {path.name}.", "path": str(path)},
+                    observation="ok",
+                )
             text = read_file(path, allow_paths)
         except (OSError, ValueError, PermissionError) as error:
             return ToolResult(
@@ -418,6 +439,7 @@ def _mkdir_tool(allow_paths: tuple[Path, ...], extra_allow: tuple[Path, ...]) ->
                     base = folder_alias("desktop") or (Path.home() / "Desktop")
                 target = base / target.name
             created = make_directory(target, allow_paths)
+            remember_folder(created)
         except (OSError, ValueError, PermissionError) as error:
             return ToolResult(
                 ok=False,

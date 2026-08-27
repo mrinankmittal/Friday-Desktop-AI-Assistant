@@ -20,7 +20,7 @@ from friday.tools.browser_tools import (
 )
 from friday.tools.builtin import build_legacy_registry
 from friday.tools.code_tools import CODE_EXPLAIN
-from friday.tools.file_tools import FILES_COPY, FILES_MKDIR
+from friday.tools.file_tools import FILES_COPY, FILES_MKDIR, FILES_READ
 from friday.tools.os_tools import OS_INFO, OS_NETWORK
 from friday.tools.productivity_tools import TASKS_ADD, TASKS_DONE, TASKS_LIST
 from friday.tools.research_tools import RESEARCH_DOCS, RESEARCH_REPORT
@@ -100,9 +100,10 @@ class ToolAgentGapTests(unittest.TestCase):
         (self.root / "sample.py").write_text(
             "def add(a, b):\n    return a + b\n", encoding="utf-8"
         )
+        self.adapter = FakeOsAdapter()
         self.registry = build_legacy_registry(
             _UnusedActions(),
-            os_adapter=FakeOsAdapter(),
+            os_adapter=self.adapter,
             browser=self.browser,
             vision=FakeVision(),
             memory=self.memory,
@@ -144,6 +145,22 @@ class ToolAgentGapTests(unittest.TestCase):
         # Ops helper stays allowlisted too.
         nested = make_directory(self.root / "inbox" / "nested", (self.root,))
         self.assertTrue(nested.is_dir())
+
+    def test_mkdir_then_open_it_opens_the_created_folder(self) -> None:
+        from unittest.mock import patch
+
+        made = self.registry.invoke(
+            FILES_MKDIR,
+            {"path": "inbox", "folder": str(self.root)},
+            self.context,
+        )
+        self.assertTrue(made.ok, made.data)
+        with patch("friday.tools.file_tools.get_os_adapter", return_value=self.adapter):
+            shown = self.registry.invoke(
+                FILES_READ, {"open": True}, self.context
+            )
+        self.assertTrue(shown.ok, shown.data)
+        self.assertIn("Opening folder inbox", shown.data["reply"])
 
     def test_tasks_crud(self) -> None:
         added = self.registry.invoke(

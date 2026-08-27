@@ -1,4 +1,4 @@
-"""Remember the last file Friday wrote so 'show me the file' has a target."""
+"""Remember the last file or folder Friday created for follow-up commands."""
 
 from __future__ import annotations
 
@@ -12,6 +12,11 @@ def remember_file(path: Path | str) -> Path:
     saved = Path(path)
     _last = saved
     return saved
+
+
+def remember_folder(path: Path | str) -> Path:
+    """Remember a created folder for a later ``open it`` command."""
+    return remember_file(path)
 
 
 def last_file() -> Path | None:
