@@ -1,0 +1,34 @@
+# Friday 2.0 runtime dependencies (Windows, Python 3.11).
+#
+# Install:   python -m pip install -r requirements.txt
+# Run:       python run.py
+#
+# Versions are pinned to the ones this build was verified against. For a
+# byte-exact environment including transitive packages, use
+# requirements-lock.txt instead. Test-only tools live in requirements-dev.txt.
+
+# --- Core: the app will not start without these ---------------------------
+Eel==0.18.2                 # local UI bridge; serves www/ into Edge
+SpeechRecognition==3.17.0   # Google STT for wake word and commands
+PyAudio==0.2.14             # microphone input for SpeechRecognition
+pyttsx3==2.99               # SAPI text to speech (English)
+edge-tts==7.2.8             # natural Hindi neural voice (Swara)
+gTTS==2.5.4                 # Hindi fallback when Edge TTS is down
+winrt-runtime==3.2.1
+winrt-Windows.Media.SpeechSynthesis==3.2.1  # Kalpana / Hemant via WinRT
+playsound==1.2.2            # startup chime
+PyAutoGUI==0.9.54           # WhatsApp window automation
+pywhatkit==5.4              # WhatsApp send and YouTube playback
+requests==2.34.2            # Gmail / Slack / Discord / Ollama HTTP
+numpy==2.4.6                # audio buffers in the wake-word provider
+pywin32==312                # win32crypt (DPAPI) for the secret box
+
+# --- Feature agents: drop one and that agent degrades, app still runs ------
+pillow==12.3.0              # screenshots (Phase 4) and vision input (Phase 7)
+winocr==0.0.15              # Windows OCR: describe / read / verify screen
+playwright==1.62.0          # browser agent; falls back to the OS browser
+pypdf==6.16.1               # ingest PDFs into memory (Phase 8)
+python-docx==1.2.0          # ingest DOCX into memory (Phase 8)
+
+# After installing playwright, fetch its browser once:
+#   python -m playwright install chromium

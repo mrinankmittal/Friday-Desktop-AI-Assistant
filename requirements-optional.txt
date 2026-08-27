@@ -1,0 +1,11 @@
+# Optional: local wake word instead of Google Speech Recognition.
+#
+# Install:  python -m pip install -r requirements-optional.txt
+#
+# These do nothing on their own. The wake provider only switches away from
+# Google once a model exists at models/friday.onnx (see models/README.md).
+# Until then Friday keeps using Google for the "Friday" hotword, which is why
+# these are not in requirements.txt.
+
+openwakeword==0.6.0
+onnxruntime==1.28.0

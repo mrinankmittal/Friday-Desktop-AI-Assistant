@@ -1,0 +1,22 @@
+/envfriday
+/envFriday/
+.venv/
+.env
+*.pem
+auth/samples/
+*.onnx
+__pycache__/
+.pytest_cache/
+contacts (1).csv
+friday.db
+friday.secrets.json
+*.secrets.json
+/engine/__pycache__
+/engine/cookies.json
+playwright-report/
+test-results/
+friday-browser-state.json
+.edge-profile/
+.edge-test/
+chroma/
+.rag/
